@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Teacher</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.8.2/theme-chalk/index.css">
+    <script src="https://cdn.staticfile.org/vue/2.6.10/vue.js"></script>
+    <script src="https://cdn.staticfile.org/element-ui/2.8.2/index.js"></script>
+</head>
+
+<body>
+    <style>
+    .el-tag + .el-tag {
+        margin-left: 10px;
+        margin-bottom: 10px;
+    }
+    .button-new-tag {
+        margin-left: 10px;
+        height: 32px;
+        line-height: 30px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+    .input-new-tag {
+        width: 90px;
+        margin-left: 10px;
+        margin-bottom: 10px;
+    }
+    .input-message {
+        margin-left: 10px;
+        margin-right: 10px;
+    }
+    </style>
+
+    <div id="app">
+        <el-container>
+            <el-header>
+                <h1>学生评语生成器</h1>
+            </el-header>
+            <el-main>
+                <el-input class="input-new-tag" v-model="inputName" size="small" placeholder="同学名字">
+                </el-input>&nbsp;同学&nbsp;
+                <template v-for="tag in dynamicTags">
+                    <el-tag type="success" :key="tag" closable :disable-transitions="false" @close="handleClose(tag)">
+                        {{tag}}
+                    </el-tag>
+                </template>
+                <el-input class="input-new-tag" v-if="inputVisible" v-model="inputValue" ref="saveTagInput" size="small" @keyup.enter.native="handleInputConfirm" @blur="handleInputConfirm">
+                </el-input>
+                <el-button v-else class="button-new-tag" size="small" @click="showInput">+ 新增</el-button>
+            </el-main>
+            <el-footer>
+                <h1>评价结果&nbsp;&nbsp;&nbsp;<el-button type="success" icon="el-icon-plus" @click="handleRefresh" round>新增</el-button></h1> &nbsp;&nbsp;&nbsp;&nbsp;字数：{{messageCount}}
+                <br>
+                <el-input v-model="message" class="input-message" type="textarea" :rows="5">
+            </el-footer>
+        </el-container>
+    </div>
+</body>
+
+<script>
+new Vue({
+    el: '#app',
+    data: {
+        inputName: "",
+        dynamicTags: [],
+        defaultTags: [
+            '课堂表现积极，编程思路清晰。',
+            '上课认真听课，能把自己的思路梳理成编程逻辑。',
+            '遇到问题，会努力想办法解决。',
+            '能认真发现问题，尝试自己解决问题，态度值得肯定。',
+            '能发挥创造力和想象力，完成本次的课堂任务。',
+            '积极参与课堂的讨论当中，有自己独特的想法和见解。',
+            '对课堂的核心知识点有理解和掌握，能学会新的编程知识。',
+            '能通过自己的探索，发现一些新鲜的创意，并分享给其他的同学。',
+            '在编程的时候，多探索一些新的创意，能巩固自己的代码基础，同时也提高自己的综合能力。',
+            '思考问题的时候逻辑清晰，对问题能多方面的进行分析。'
+        ],
+        inputVisible: false,
+        inputValue: ""
+    },
+    methods: {
+        handleClose(tag) {
+                this.dynamicTags.splice(this.dynamicTags.indexOf(tag), 1);
+            },
+            showInput() {
+                this.inputVisible = true;
+                this.$nextTick(_ => {
+                    this.$refs.saveTagInput.$refs.input.focus();
+                });
+            },
+            handleInputConfirm() {
+                let inputValue = this.inputValue;
+                if (inputValue) {
+                    this.dynamicTags.push(inputValue);
+                }
+                this.inputVisible = false;
+                this.inputValue = '';
+            },
+            handleRefresh() {
+                var arrIndex = Math.floor(Math.random() * this.defaultTags.length);
+                if (this.dynamicTags.indexOf(this.defaultTags[arrIndex]) == -1) {
+                    this.dynamicTags.push(this.defaultTags[arrIndex]);
+                }
+            }
+    },
+    computed: {
+        message: function() {
+            return "" + this.inputName + "同学" + this.dynamicTags.map((item) => item).join('');
+        },
+        messageCount: function() {
+            return this.message.length;
+        }
+    }
+})
+</script>
+
+</html>
